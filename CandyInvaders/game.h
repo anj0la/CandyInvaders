@@ -22,5 +22,6 @@ volatile int time_since_last_spawn = 0;
 // Method Declarations
 bool initialize_game();
 void increment_speed_counter();
+bool main_menu();
 
 #endif 
