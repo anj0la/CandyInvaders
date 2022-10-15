@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="candyinvaders.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="initialize.cpp" />
     <ClCompile Include="monster.cpp" />
@@ -152,6 +153,7 @@
     <Image Include="graphics\candy_ship.bmp" />
     <Image Include="graphics\candy_swirl.bmp" />
     <Image Include="graphics\monster_projectile.bmp" />
+    <Image Include="graphics\static_background.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

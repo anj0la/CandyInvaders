@@ -39,6 +39,9 @@
     <ClCompile Include="initialize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="candyinvaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -62,6 +65,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="graphics\monster_projectile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\static_background.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

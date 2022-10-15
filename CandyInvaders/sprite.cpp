@@ -4,7 +4,7 @@
 /*
 Constructs a new instance of the sprite class.
 */
-sprite::sprite() {
+Sprite::Sprite() {
 	image = NULL;
 	width = 0;
 	height = 0;
@@ -17,7 +17,7 @@ sprite::sprite() {
 /*
 Removes the sprite bitmap from memory.
 */
-sprite::~sprite() {
+Sprite::~Sprite() {
 	if (image != NULL) {
 		destroy_bitmap(image);
 	}
@@ -27,7 +27,7 @@ sprite::~sprite() {
 Loads the sprite.
 @returns - true if the bitmap was successfully loaded, false otherwise
 */
-bool sprite::load(const char* filename) {
+bool Sprite::load(const char* filename) {
 	image = load_bitmap(filename, NULL);
 	if (image != NULL) {
 		width = image->w;
@@ -41,51 +41,51 @@ bool sprite::load(const char* filename) {
 Draws the sprite to the destination bitamp (usally screen or a buffer).
 @param dest - the bitmap to load
 */
-void sprite::draw(BITMAP* dest) {
+void Sprite::draw(BITMAP* dest) {
 	draw_sprite(dest, image, x_pos, y_pos);
 } // draw
 
-int sprite::get_width() {
+int Sprite::get_width() {
 	return width;
 } // get_width
 
-int sprite::get_height() {
+int Sprite::get_height() {
 	return height;
 } // get_height
 
-int sprite::get_x_pos() {
+int Sprite::get_x_pos() {
 	return x_pos;
 } // get_x_pos
 
-int sprite::get_y_pos() {
+int Sprite::get_y_pos() {
 	return y_pos;
 } // get_y_pos
 
-int sprite::get_speed() {
+int Sprite::get_speed() {
 	return speed;
 } // get_speed
 
-bool sprite::get_alive() {
+bool Sprite::get_alive() {
 	return alive;
 } // get_alive
 
-void sprite::set_x_pos(int new_pos) {
+void Sprite::set_x_pos(int new_pos) {
 	x_pos = new_pos;
 } // set_y_pos
 
-void sprite::set_y_pos(int new_pos) {
+void Sprite::set_y_pos(int new_pos) {
 	y_pos = new_pos;
 } // set_y_pos
 
-void sprite::set_speed(int new_speed) {
+void Sprite::set_speed(int new_speed) {
 	speed = new_speed;
 } // set_speed
 
-void sprite::set_alive(bool state_of_sprite) {
+void Sprite::set_alive(bool state_of_sprite) {
 	alive = state_of_sprite;
 }
 
-bool sprite::is_alive() {
+bool Sprite::is_alive() {
 	if (alive == true) {
 		return true;
 	}
@@ -94,12 +94,12 @@ bool sprite::is_alive() {
 	}
 }
 
-void sprite::move_sprite(int x, int y) {
+void Sprite::move_sprite(int x, int y) {
 	x_pos += x;
 	y_pos += y;
 }
 
-int sprite::inside(int x, int y, int left, int top, int right, int bottom) {
+int Sprite::inside(int x, int y, int left, int top, int right, int bottom) {
 	if (x > left && x < right && y > top && y < bottom) {
 		return 1;
 	}
@@ -108,7 +108,7 @@ int sprite::inside(int x, int y, int left, int top, int right, int bottom) {
 	}
 }
 
-bool sprite::collided(sprite* other) {
+bool Sprite::collided(Sprite* other) {
 	int other_width_offset = other->get_x_pos() + other->get_width();
 	int other_height_offset = other->get_y_pos() + other->get_height();
 	if ((x_pos + width) >= other->get_x_pos() && x_pos < other_width_offset && (y_pos + height) >= other->get_y_pos() && y_pos <= other_height_offset) {

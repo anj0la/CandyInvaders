@@ -2,7 +2,7 @@
 #define sprite_h
 #include <allegro.h>
 
-class sprite {
+class Sprite {
 private:
 	BITMAP* image;
 	int width;
@@ -12,8 +12,8 @@ private:
 	int speed;
 	bool alive;
 public:
-	sprite();
-	~sprite();
+	Sprite();
+	~Sprite();
 	bool load(const char* filename);
 	void draw(BITMAP* dest);
 	int get_width();
@@ -28,7 +28,7 @@ public:
 	void set_alive(bool state_of_sprite);
 	bool is_alive();
 	void move_sprite(int x, int y);
-	bool collided(sprite* other);
+	bool collided(Sprite* other);
 private:
 	int inside(int x, int y, int left, int top, int right, int bottom);
 };
