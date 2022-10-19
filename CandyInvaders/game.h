@@ -22,25 +22,30 @@
 // Game class
 class Game {
 private:
-	volatile int speed_counter;
+	static volatile int speed_counter;
 	volatile int timer; // actually don't need this, leaving it for testing purposes
 	volatile int time_since_last_spawn;
 	BITMAP* buffer;
 	BITMAP* background;
 	char total_score[MAX_SCORE_LEN];
 	char player_health[MAX_HEALTH_LEN];
+	bool paused;
 public:
 	Game();
 	~Game();
 	bool load_background(const char* filename);
 	void new_game();
+	void reset_game();
 	bool run_game();
 	bool main_menu();
 	bool play_game();
 	bool end_game_menu();
+	int get_speed_counter();
+	void display_help_module();
+	static void increment_speed_counter();
+	//static void cast_increment_speed_counter();
 private:
 	void update_screen();
-	//void display_help_module();
 };
 
 // Interrupt Handler Vars

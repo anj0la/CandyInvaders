@@ -3,17 +3,22 @@
 #include <stdio.h> 
 #include <stdlib.h>
 
+volatile int Game::speed_counter = 0;
+
 /*
 Constructs a new instance of the game class.
 */
 Game::Game() {
-	speed_counter = 0;
-	timer = 1;
+	//speed_counter = 0;
+	timer = 0;
 	time_since_last_spawn = 0;
 	buffer = create_bitmap(WIDTH, HEIGHT);
 	background = NULL;
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
+	paused = false;
+	LOCK_VARIABLE(speed_counter);
+	LOCK_FUNCTION(increment_speed_counter);
 } // constructor
 
 /*
@@ -36,34 +41,47 @@ bool Game::load_background(const char* filename) {
 Starts a new game by setting all game values to their default state and runs the game.
 */
 void Game::new_game() {
-	speed_counter = 0;
-	timer = 1;
-	time_since_last_spawn = 0;
-	buffer = create_bitmap(WIDTH, HEIGHT);
-	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
-	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
+	//speed_counter = 0;
+	//timer = 0;
+	//time_since_last_spawn = 0;
+	//buffer = create_bitmap(WIDTH, HEIGHT);
+	//sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
+	//sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
 	bool game_over = run_game();
 	if (!game_over) {
+		reset_game();
 		new_game();
 	}
 } // new_game
+
+void Game::reset_game() {
+	speed_counter = 0;
+	timer = 0;
+	time_since_last_spawn = 0;
+	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
+	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
+}
 
 bool Game::run_game() {
 	bool advance = main_menu();
 	if (!advance) {
 		return true; // game is over
 	}
-	//play_game();
-	bool end_game = end_game_menu();
-	if (end_game) {
+	int installed_interrupt = install_int_ex(increment_speed_counter, BPS_TO_TIMER(FPS));
+	if (installed_interrupt != 0) {
+		allegro_message("Error setting up the interrupt handler.");
 		return true;
 	}
-	return false;
+	bool game_ended = play_game();
+	if (game_ended) {
+		return true; // game is ever
+	}
+	bool pressed_esc = end_game_menu();
+	if (pressed_esc) {
+		return true;
+	}
+	return false; // the player wants to play the game again
 }
-
-bool Game::play_game() {
-	return true;
-} // play_game
 
 /*
 Displays the main menu of the game.
@@ -87,6 +105,61 @@ bool Game::main_menu() {
 	}
 	return true; // the enter key was pressed
 } // main_menu
+
+bool Game::play_game() {
+	bool game_over = false;
+	bool pressed_esc = false;
+	while (!game_over) {
+		while (speed_counter > 0) {
+			speed_counter--;
+			timer++;
+			time_since_last_spawn--;
+		}
+
+		// Presssed the ESC key?
+		if (key[KEY_ESC]) {
+			game_over = true;
+			pressed_esc = true;
+		}
+			
+		// Calculating time elasped
+		char time_elasped[256];
+		sprintf_s(time_elasped, 256, "%d", (timer / FPS) + 1);
+
+			
+		// Game over?
+		if (timer >= 10 * FPS) {
+			game_over = true;
+		}
+
+		clear_bitmap(buffer);
+			
+		// Drawing total score and player health to buffer
+		textout_ex(buffer, font, time_elasped, 1, 1, WHITE, -1);
+
+		textout_ex(buffer, font, total_score, 1, WIDTH - 20, WHITE, -1);
+		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
+
+		// Updating game screen
+		update_screen();	
+	} // game loop
+	// checking if we need to pause the game or if we need to quit the game
+	/*if (keypressed()) {
+		if (key[KEY_LCONTROL] && key[KEY_H] || key[KEY_RCONTROL] && key[KEY_H]) {
+			paused = true;
+			display_help_module();
+		}
+		else if (key[KEY_ESC]) {
+			return true;
+		}
+		else {
+			paused = false;
+			clear_bitmap(buffer);
+		}
+	}*/
+	remove_int(increment_speed_counter); // removing the interrupt handler as we don't need it anymore
+	return pressed_esc;
+} // play_game
 
 /*
 Displays the end game menu.
@@ -120,7 +193,29 @@ void Game::update_screen() {
 	release_screen();
 } // update_screen
 
+void Game::display_help_module() {
+	clear_bitmap(buffer);
+	blit(background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
+	rectfill(buffer, 150, 150, 450, 450, BLACK);
+	textout_ex(buffer, font, "HELP MODULE", 155, 155, WHITE, -1);
+	textout_ex(buffer, font, "Use the Up, Down, Left and Right arrow keys to move around.", 155, 175, WHITE, -1);
+	textout_ex(buffer, font, "Use the Space Bar to shoot candy at the candy monsters.", 155, 195, WHITE, -1);
+	update_screen();
+} // display_help_module 
 
+/*
+The function that gets called every time the interrupt handler is executed.
+*/
+void Game::increment_speed_counter()
+{
+	speed_counter++;
+	//time_since_last_spawn++;
+}
+END_OF_FUNCTION(increment_speed_counter);
+
+//static void cast_increment_speed_counter() {
+//
+//}
 
 
 
