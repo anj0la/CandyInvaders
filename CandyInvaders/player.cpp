@@ -13,7 +13,7 @@ Player::Player() {
 Automatically removes the player object from memory.
 */
 Player::~Player() {
-	// Empty destructor, sprite classes handles the deleting of the bitmap
+	// Empty destructor, sprite classes handles the deleting of the bitmap associated with the player
 } // destructor
 
 /*
@@ -29,8 +29,8 @@ bool Player::load_sprite(const char* filename) {
 } // load_sprite
 
 /*
-Gets the pointer to the player sprite.
-@return - a pointer pointing to the player sprite
+Gets the player sprite.
+@return - the pointer pointing to the player sprite
 */
 Sprite* Player::get_player_sprite() {
 	return player_spr;

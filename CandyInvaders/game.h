@@ -2,6 +2,7 @@
 #define game_h
 #include <allegro.h>
 #include "player.h"
+#include "projectile.h"
 
 // Screen Constants
 #define WIDTH 600
@@ -28,6 +29,7 @@ private:
 	BITMAP* buffer;
 	BITMAP* background;
 	Player* player;
+	Projectile* projectile;
 	char total_score[MAX_SCORE_LEN];
 	char player_health[MAX_HEALTH_LEN];
 	bool paused;
@@ -36,13 +38,13 @@ public:
 	~Game();
 	bool load_background(const char* filename);
 	bool load_player_sprite(const char* filename);
+	bool load_projectile_sprite(const char* filename);
 	void new_game();
 	void reset_game();
 	bool run_game();
 	bool main_menu();
 	bool play_game();
 	bool end_game_menu();
-	int get_speed_counter();
 	void display_help_module();
 	static void increment_speed_counter();
 	//static void cast_increment_speed_counter();

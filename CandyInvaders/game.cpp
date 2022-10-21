@@ -15,6 +15,7 @@ Game::Game() {
 	buffer = create_bitmap(WIDTH, HEIGHT);
 	background = NULL;
 	player = new Player();
+	projectile = new Projectile();
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
 	paused = false;
@@ -30,6 +31,9 @@ Game::~Game() {
 	destroy_bitmap(background);
 } // destructor
 
+/*
+Loads a BMP file into the background bitmap.
+*/
 bool Game::load_background(const char* filename) {
 	background = load_bitmap(filename, NULL);
 	if (background != NULL) {
@@ -38,14 +42,27 @@ bool Game::load_background(const char* filename) {
 	return false; // background is NULL
 } // load_background
 
+/*
+Loads a BMP file into the player sprite. 
+*/
 bool Game::load_player_sprite(const char* filename) {
-	bool loaded = player->load_sprite(filename);
+	bool loaded = player->get_player_sprite()->load(filename);
 	if (loaded) {
 		return true;
 	}
 	return false;
 } // load_player_sprite
 
+/*
+Loads a BMP into the projectile sprite.
+*/
+bool Game::load_projectile_sprite(const char* filename) {
+	bool loaded = projectile->get_projectile_sprite()->load(filename);
+	if (loaded) {
+		return true;
+	}
+	return false;
+} // load_projectile_sprite
 /*
 Starts a new game by setting all game values to their default state and runs the game.
 */
@@ -56,6 +73,7 @@ void Game::new_game() {
 	player->get_player_sprite()->set_x_pos(275);
 	player->get_player_sprite()->set_y_pos(675);
 	player->get_player_sprite()->set_alive(true);
+	projectile->get_projectile_sprite()->set_alive(false);
 	// player->set_alive
 	bool game_over = run_game();
 	if (!game_over) {
@@ -121,6 +139,9 @@ bool Game::play_game() {
 	bool pressed_esc = false;
 	while (!game_over) {
 		while (speed_counter > 0) {
+			projectile->move_projectile();
+			projectile->handle_projectile_out_of_bounds();
+			player->get_player_input(projectile->get_projectile_sprite());
 			speed_counter--;
 			timer++;
 			time_since_last_spawn--;
@@ -148,6 +169,11 @@ bool Game::play_game() {
 
 		textout_ex(buffer, font, total_score, 1, WIDTH - 20, WHITE, -1);
 		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
+
+		// Is projectile alive or is the game not paused? 
+		if (projectile->get_projectile_sprite()->is_alive()) {
+			projectile->get_projectile_sprite()->draw(buffer); // then we draw it to the buffer
+		}
 
 		player->get_player_sprite()->draw(buffer);
 

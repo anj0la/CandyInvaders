@@ -147,6 +147,7 @@
     <ClInclude Include="candyinvaders.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="projectile.h" />
     <ClInclude Include="sprite.h" />
   </ItemGroup>
   <ItemGroup>

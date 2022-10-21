@@ -28,6 +28,7 @@ int main(void) {
 	Game* game = new Game();
 	game->load_background("graphics\\static_background.bmp");
 	game->load_player_sprite("graphics\\candy_ship.bmp");
+	game->load_projectile_sprite("graphics\\candy_swirl.bmp");
 	game->new_game();
 	//while (!(key[KEY_LCONTROL] && key[KEY_H]));
 	// while (!key[KEY_ESC]);
