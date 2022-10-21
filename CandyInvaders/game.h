@@ -3,6 +3,7 @@
 #include <allegro.h>
 #include "player.h"
 #include "projectile.h"
+#include "monster.h"
 
 // Screen Constants
 #define WIDTH 600
@@ -30,6 +31,7 @@ private:
 	BITMAP* background;
 	Player* player;
 	Projectile* projectile;
+	Monster* monster;
 	char total_score[MAX_SCORE_LEN];
 	char player_health[MAX_HEALTH_LEN];
 	bool paused;
@@ -39,6 +41,7 @@ public:
 	bool load_background(const char* filename);
 	bool load_player_sprite(const char* filename);
 	bool load_projectile_sprite(const char* filename);
+	bool load_monster_sprite(const char* filename);
 	void new_game();
 	void reset_game();
 	bool run_game();
@@ -46,20 +49,10 @@ public:
 	bool play_game();
 	bool end_game_menu();
 	void display_help_module();
+	bool is_game_over();
 	static void increment_speed_counter();
-	//static void cast_increment_speed_counter();
 private:
 	void update_screen();
 };
-
-// Interrupt Handler Vars
-//extern volatile int speed_counter;
-//extern volatile int timer;
-//extern volatile int time_since_last_spawn;
-
-// Method Declarations
-//bool initialize_game();
-//void increment_speed_counter();
-//bool main_menu();
 
 #endif 

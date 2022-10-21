@@ -27,5 +27,4 @@ public:
 	void handle_player_out_of_bounds();
 };
 
-
 #endif 

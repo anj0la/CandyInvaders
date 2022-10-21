@@ -132,13 +132,13 @@ void Player::fire_player_projectile(Sprite* player_projectile) {
 } // fire_player_projectile
 
 /*
-Checks if the player has collided with a candy monster, and ends the game if a collision has occured.
+Checks if the player has collided with a candy monster.
+@param monster_spr - the monster sprite 
+@return true if the player sprite collided with the monster sprite, false otherwise
 */
 bool Player::collied_with_monster(Sprite* monster_spr) {
 	if (player_spr->collided(monster_spr)) {
-		player_spr->set_alive(false);
-		monster_spr->set_alive(false);
-		 return true;
+		return true;
 	}
 	return false;
 } // collied_with_monster

@@ -5,7 +5,7 @@ Constructs a new instance of the projectile class.
 */
 Projectile::Projectile() {
 	projectile = new Sprite();
-	projectile->set_speed(7);
+	projectile->set_speed(PROJECTILE_SPEED);
 } // constructor
 
 /*

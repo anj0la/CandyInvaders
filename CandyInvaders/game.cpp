@@ -16,6 +16,7 @@ Game::Game() {
 	background = NULL;
 	player = new Player();
 	projectile = new Projectile();
+	monster = new Monster();
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
 	paused = false;
@@ -61,20 +62,28 @@ bool Game::load_projectile_sprite(const char* filename) {
 	if (loaded) {
 		return true;
 	}
-	return false;
+return false;
 } // load_projectile_sprite
+
+bool Game::load_monster_sprite(const char* filename) {
+	bool loaded = monster->get_monster_sprite()->load(filename);
+	if (loaded) {
+		return true;
+	}
+	return false;
+} // load_monster_sprite
+
 /*
 Starts a new game by setting all game values to their default state and runs the game.
 */
 void Game::new_game() {
-	// Create a new Player here
-	// Player* player = new Player();
-	// player->
 	player->get_player_sprite()->set_x_pos(275);
 	player->get_player_sprite()->set_y_pos(675);
 	player->get_player_sprite()->set_alive(true);
+	monster->get_monster_sprite()->set_y_pos(-100);
+	monster->get_monster_sprite()->set_x_pos(monster->get_random_monster_x_pos());
+	monster->get_monster_sprite()->set_alive(true);
 	projectile->get_projectile_sprite()->set_alive(false);
-	// player->set_alive
 	bool game_over = run_game();
 	if (!game_over) {
 		reset_game();
@@ -113,7 +122,7 @@ bool Game::run_game() {
 
 /*
 Displays the main menu of the game.
-@param background - the static background 
+@param background - the static background
 @return - true if the enter key was pressed was pressed, false if the escape key was pressed
 */
 bool Game::main_menu() {
@@ -139,13 +148,33 @@ bool Game::play_game() {
 	bool pressed_esc = false;
 	while (!game_over) {
 		while (speed_counter > 0) {
+			monster->respawn_monster();
 			projectile->move_projectile();
+			monster->move_monster();
 			projectile->handle_projectile_out_of_bounds();
+			monster->handle_monster_out_of_bounds();
+			// Checking if player collided with the monster
+			if (player->collied_with_monster(monster->get_monster_sprite())) {
+				int old_health = player->get_player_health(); // make this a method instead
+				player->set_player_health(old_health - 25); // make this a method instead
+				if (is_game_over()) {
+					game_over = true;
+				}
+			} // if
+
+			if (projectile->hit_monster(monster->get_monster_sprite())) {
+				monster->get_monster_sprite()->set_alive(false);
+				projectile->get_projectile_sprite()->set_alive(false);
+				int old_score = player->get_score(); // make this a method
+				player->set_score(old_score + 100); // make this a method
+			}
+
+
 			player->get_player_input(projectile->get_projectile_sprite());
 			speed_counter--;
 			timer++;
 			time_since_last_spawn--;
-		}
+		} // inner while
 
 		// Presssed the ESC key?
 		if (key[KEY_ESC]) {
@@ -156,10 +185,12 @@ bool Game::play_game() {
 		// Calculating time elasped
 		char time_elasped[256];
 		sprintf_s(time_elasped, 256, "%d", (timer / FPS) + 1);
-			
+		sprintf_s(player_health, MAX_HEALTH_LEN, "%d", player->get_player_health());
+		sprintf_s(total_score, MAX_SCORE_LEN, "%d", player->get_score());
+
 		// Game over?
 		if (timer >= 10 * FPS) {
-			game_over = true;
+			// game_over = true;
 		}
 
 		clear_bitmap(buffer);
@@ -170,7 +201,12 @@ bool Game::play_game() {
 		textout_ex(buffer, font, total_score, 1, WIDTH - 20, WHITE, -1);
 		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
 
-		// Is projectile alive or is the game not paused? 
+		// Is the monster alive or is the game not paused? 
+		if (monster->get_monster_sprite()->is_alive()) {
+			monster->get_monster_sprite()->draw(buffer);
+		}
+
+		// Is the projectile alive or is the game not paused? 
 		if (projectile->get_projectile_sprite()->is_alive()) {
 			projectile->get_projectile_sprite()->draw(buffer); // then we draw it to the buffer
 		}
@@ -239,6 +275,17 @@ void Game::display_help_module() {
 	textout_ex(buffer, font, "Use the Space Bar to shoot candy at the candy monsters.", 155, 195, WHITE, -1);
 	update_screen();
 } // display_help_module 
+
+/*
+Checks if the player's health is 0.
+@return - true if the player's health is 0, indicating that the game is over, false otherwise
+*/
+bool Game::is_game_over() {
+	if (player->get_player_health() <= 0) {
+		return true;
+	}
+	return false;
+} // is_game_over
 
 /*
 The function that gets called every time the interrupt handler is executed.

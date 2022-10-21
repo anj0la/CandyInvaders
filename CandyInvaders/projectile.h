@@ -4,6 +4,7 @@
 #include "sprite.h"
 
 #define OFFSET 25
+#define PROJECTILE_SPEED 7
 
 class Projectile {
 private:
@@ -17,6 +18,5 @@ public:
 	void handle_projectile_out_of_bounds();
 	bool hit_monster(Sprite* monster);
 };
-
 
 #endif 
