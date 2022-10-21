@@ -1,7 +1,7 @@
 #ifndef game_h
 #define game_h
 #include <allegro.h>
-#include "sprite.h"
+#include "player.h"
 
 // Screen Constants
 #define WIDTH 600
@@ -27,6 +27,7 @@ private:
 	volatile int time_since_last_spawn;
 	BITMAP* buffer;
 	BITMAP* background;
+	Player* player;
 	char total_score[MAX_SCORE_LEN];
 	char player_health[MAX_HEALTH_LEN];
 	bool paused;
@@ -34,6 +35,7 @@ public:
 	Game();
 	~Game();
 	bool load_background(const char* filename);
+	bool load_player_sprite(const char* filename);
 	void new_game();
 	void reset_game();
 	bool run_game();

@@ -14,6 +14,7 @@ Game::Game() {
 	time_since_last_spawn = 0;
 	buffer = create_bitmap(WIDTH, HEIGHT);
 	background = NULL;
+	player = new Player();
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
 	paused = false;
@@ -35,18 +36,27 @@ bool Game::load_background(const char* filename) {
 		return true;
 	}
 	return false; // background is NULL
-}
+} // load_background
+
+bool Game::load_player_sprite(const char* filename) {
+	bool loaded = player->load_sprite(filename);
+	if (loaded) {
+		return true;
+	}
+	return false;
+} // load_player_sprite
 
 /*
 Starts a new game by setting all game values to their default state and runs the game.
 */
 void Game::new_game() {
-	//speed_counter = 0;
-	//timer = 0;
-	//time_since_last_spawn = 0;
-	//buffer = create_bitmap(WIDTH, HEIGHT);
-	//sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
-	//sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
+	// Create a new Player here
+	// Player* player = new Player();
+	// player->
+	player->get_player_sprite()->set_x_pos(275);
+	player->get_player_sprite()->set_y_pos(675);
+	player->get_player_sprite()->set_alive(true);
+	// player->set_alive
 	bool game_over = run_game();
 	if (!game_over) {
 		reset_game();
@@ -125,7 +135,6 @@ bool Game::play_game() {
 		// Calculating time elasped
 		char time_elasped[256];
 		sprintf_s(time_elasped, 256, "%d", (timer / FPS) + 1);
-
 			
 		// Game over?
 		if (timer >= 10 * FPS) {
@@ -139,6 +148,8 @@ bool Game::play_game() {
 
 		textout_ex(buffer, font, total_score, 1, WIDTH - 20, WHITE, -1);
 		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
+
+		player->get_player_sprite()->draw(buffer);
 
 		// Updating game screen
 		update_screen();	
