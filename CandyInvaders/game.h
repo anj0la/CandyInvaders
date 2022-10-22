@@ -32,6 +32,7 @@ private:
 	Player* player;
 	Projectile* projectile;
 	Monster* monster;
+	Projectile* monster_projectile;
 	char total_score[MAX_SCORE_LEN];
 	char player_health[MAX_HEALTH_LEN];
 	bool paused;
@@ -42,6 +43,7 @@ public:
 	bool load_player_sprite(const char* filename);
 	bool load_projectile_sprite(const char* filename);
 	bool load_monster_sprite(const char* filename);
+	bool load_monster_projectile_sprite(const char* filename);
 	void new_game();
 	void reset_game();
 	bool run_game();

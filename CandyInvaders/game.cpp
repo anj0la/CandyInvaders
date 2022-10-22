@@ -17,6 +17,7 @@ Game::Game() {
 	player = new Player();
 	projectile = new Projectile();
 	monster = new Monster();
+	monster_projectile = new Projectile();
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
 	paused = false;
@@ -73,10 +74,19 @@ bool Game::load_monster_sprite(const char* filename) {
 	return false;
 } // load_monster_sprite
 
+bool Game::load_monster_projectile_sprite(const char* filename) {
+	bool loaded = monster_projectile->get_projectile_sprite()->load(filename);
+	if (loaded) {
+		return true;
+	}
+	return false;
+} // load_monster_projectile_sprite
+
 /*
 Starts a new game by setting all game values to their default state and runs the game.
 */
 void Game::new_game() {
+	// set_up_sprites();
 	player->get_player_sprite()->set_x_pos(275);
 	player->get_player_sprite()->set_y_pos(675);
 	player->get_player_sprite()->set_alive(true);
@@ -84,6 +94,7 @@ void Game::new_game() {
 	monster->get_monster_sprite()->set_x_pos(monster->get_random_monster_x_pos());
 	monster->get_monster_sprite()->set_alive(true);
 	projectile->get_projectile_sprite()->set_alive(false);
+	monster_projectile->get_projectile_sprite()->set_alive(false);
 	bool game_over = run_game();
 	if (!game_over) {
 		reset_game();
@@ -149,26 +160,38 @@ bool Game::play_game() {
 	while (!game_over) {
 		while (speed_counter > 0) {
 			monster->respawn_monster();
-			projectile->move_projectile();
+			monster_projectile->fire_projectile(monster->get_monster_sprite());
+			projectile->move_projectile_up();
+			monster_projectile->move_projectile_down();
 			monster->move_monster();
+			monster_projectile->handle_projectile_out_of_bounds();
 			projectile->handle_projectile_out_of_bounds();
 			monster->handle_monster_out_of_bounds();
+			player->handle_player_out_of_bounds();
 			// Checking if player collided with the monster
 			if (player->collied_with_monster(monster->get_monster_sprite())) {
-				int old_health = player->get_player_health(); // make this a method instead
-				player->set_player_health(old_health - 25); // make this a method instead
+				player->set_player_health(0); 
 				if (is_game_over()) {
 					game_over = true;
 				}
-			} // if
+			} // outer if
+			// Checking if monster projectile hit player
+			if (monster_projectile->direct_hit(player->get_player_sprite())) {
+				monster_projectile->get_projectile_sprite()->set_alive(false);
+				int old_health = player->get_player_health();
+				player->set_player_health(old_health - 25);
+				if (is_game_over()) {
+					game_over = true;
+				}
+			} // outer if
 
-			if (projectile->hit_monster(monster->get_monster_sprite())) {
+			// Checking if projectile hit monster
+			if (projectile->direct_hit(monster->get_monster_sprite())) {
 				monster->get_monster_sprite()->set_alive(false);
 				projectile->get_projectile_sprite()->set_alive(false);
 				int old_score = player->get_score(); // make this a method
 				player->set_score(old_score + 100); // make this a method
 			}
-
 
 			player->get_player_input(projectile->get_projectile_sprite());
 			speed_counter--;
@@ -200,6 +223,11 @@ bool Game::play_game() {
 
 		textout_ex(buffer, font, total_score, 1, WIDTH - 20, WHITE, -1);
 		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
+
+		// Is the monster projectile alive or is the game not paused? 
+		if (monster_projectile->get_projectile_sprite()->is_alive()) {
+			monster_projectile->get_projectile_sprite()->draw(buffer); // then we draw it to the buffer
+		}
 
 		// Is the monster alive or is the game not paused? 
 		if (monster->get_monster_sprite()->is_alive()) {

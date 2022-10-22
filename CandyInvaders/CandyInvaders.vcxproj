@@ -137,7 +137,6 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="initialize.cpp" />
     <ClCompile Include="monster.cpp" />
-    <ClCompile Include="monster_projectile.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="projectile.cpp" />
     <ClCompile Include="Source.cpp" />

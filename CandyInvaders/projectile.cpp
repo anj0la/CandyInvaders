@@ -26,7 +26,7 @@ Sprite* Projectile::get_projectile_sprite() {
 /*
 Moves the projectile up by the speed specified in the initialize function.
 */
-void Projectile::move_projectile() {
+void Projectile::move_projectile_up() {
 	int old_y_pos = projectile->get_y_pos();
 	int speed = projectile->get_speed();
 	if (!projectile->is_alive()) {
@@ -36,13 +36,25 @@ void Projectile::move_projectile() {
 } // move_projectile
 
 /*
+Moves the projectile down by the speed specified in the initialize function.
+*/
+void Projectile::move_projectile_down() {
+	int old_y_pos = projectile->get_y_pos();
+	int speed = projectile->get_speed();
+	if (!projectile->is_alive()) {
+		return;
+	}
+	projectile->set_y_pos(old_y_pos + speed);
+} // move_projectile
+
+/*
 Fires the projectile.
 */
-void Projectile::fire_projectile(Sprite* player) {
+void Projectile::fire_projectile(Sprite* other) {
 	// fire again
 	if (!projectile->is_alive()) {
-		projectile->set_x_pos(player->get_x_pos() + OFFSET);
-		projectile->set_y_pos(player->get_y_pos());
+		projectile->set_x_pos(other->get_x_pos() + OFFSET);
+		projectile->set_y_pos(other->get_y_pos());
 		projectile->set_alive(true);
 	}
 } // fire_projectile
@@ -54,6 +66,9 @@ void Projectile::handle_projectile_out_of_bounds() {
 	if (projectile->get_y_pos() <= -100) { // top
 		projectile->set_alive(false);
 	}
+	if (projectile->get_y_pos() >= 900) { // down
+		projectile->set_alive(false);
+	}
 } // handle_projectile_out_of_bounds
 
 /*
@@ -61,8 +76,8 @@ Checks if the projectile hit the monster.
 @param monster - the candy sprite monster
 @return true if the projectile collided with the monster, false otherwise
 */
-bool Projectile::hit_monster(Sprite* monster) {
-	if (projectile->collided(monster)) {
+bool Projectile::direct_hit(Sprite* other) {
+	if (projectile->collided(other)) {
 		return true;
 	}
 	return false;

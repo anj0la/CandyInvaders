@@ -13,10 +13,11 @@ public:
 	Projectile();
 	~Projectile();
 	Sprite* get_projectile_sprite();
-	void move_projectile();
-	void fire_projectile(Sprite* player);
+	void move_projectile_up();
+	void move_projectile_down();
+	void fire_projectile(Sprite* other);
 	void handle_projectile_out_of_bounds();
-	bool hit_monster(Sprite* monster);
+	bool direct_hit(Sprite* other);
 };
 
 #endif 

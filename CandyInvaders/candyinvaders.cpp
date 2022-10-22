@@ -30,6 +30,7 @@ int main(void) {
 	game->load_player_sprite("graphics\\candy_ship.bmp");
 	game->load_projectile_sprite("graphics\\candy_swirl.bmp");
 	game->load_monster_sprite("graphics\\candy_monster.bmp");
+	game->load_monster_projectile_sprite("graphics\\monster_projectile.bmp");
 	game->new_game();
 	//while (!(key[KEY_LCONTROL] && key[KEY_H]));
 	// while (!key[KEY_ESC]);

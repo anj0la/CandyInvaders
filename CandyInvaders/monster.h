@@ -3,7 +3,7 @@
 #include <allegro.h>
 #include "sprite.h"
 
-#define MONSTER_SPEED 4
+#define MONSTER_SPEED 3
 
 class Monster {
 private:
