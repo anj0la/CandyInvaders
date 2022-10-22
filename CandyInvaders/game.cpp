@@ -35,6 +35,7 @@ Game::~Game() {
 
 /*
 Loads a BMP file into the background bitmap.
+@return - true if the file was loaded successfully into the background, false otherwise
 */
 bool Game::load_background(const char* filename) {
 	background = load_bitmap(filename, NULL);
@@ -45,7 +46,8 @@ bool Game::load_background(const char* filename) {
 } // load_background
 
 /*
-Loads a BMP file into the player sprite. 
+Loads the BMP file containing the player sprite into the game.
+@return - true if the file loaded successfully, false otherwise
 */
 bool Game::load_player_sprite(const char* filename) {
 	bool loaded = player->get_player_sprite()->load(filename);
@@ -56,7 +58,8 @@ bool Game::load_player_sprite(const char* filename) {
 } // load_player_sprite
 
 /*
-Loads a BMP into the projectile sprite.
+Loads the BMP file containing the projectile sprite into the game.
+@return - true if the file loaded successfully, false otherwise
 */
 bool Game::load_projectile_sprite(const char* filename) {
 	bool loaded = projectile->get_projectile_sprite()->load(filename);
@@ -66,6 +69,10 @@ bool Game::load_projectile_sprite(const char* filename) {
 return false;
 } // load_projectile_sprite
 
+/*
+Loads the BMP file containing the monster sprite into the game.
+@return - true if the file loaded successfully, false otherwise
+*/
 bool Game::load_monster_sprite(const char* filename) {
 	bool loaded = monster->get_monster_sprite()->load(filename);
 	if (loaded) {
@@ -74,6 +81,10 @@ bool Game::load_monster_sprite(const char* filename) {
 	return false;
 } // load_monster_sprite
 
+/*
+Loads the BMP file containing the monster projectile sprite into the game.
+@return - true if the file loaded successfully, false otherwise
+*/
 bool Game::load_monster_projectile_sprite(const char* filename) {
 	bool loaded = monster_projectile->get_projectile_sprite()->load(filename);
 	if (loaded) {
@@ -83,10 +94,9 @@ bool Game::load_monster_projectile_sprite(const char* filename) {
 } // load_monster_projectile_sprite
 
 /*
-Starts a new game by setting all game values to their default state and runs the game.
+Sets all of the sprites to their default states.
 */
-void Game::new_game() {
-	// set_up_sprites();
+void Game::set_up_sprites() {
 	player->get_player_sprite()->set_x_pos(275);
 	player->get_player_sprite()->set_y_pos(675);
 	player->get_player_sprite()->set_alive(true);
@@ -95,6 +105,13 @@ void Game::new_game() {
 	monster->get_monster_sprite()->set_alive(true);
 	projectile->get_projectile_sprite()->set_alive(false);
 	monster_projectile->get_projectile_sprite()->set_alive(false);
+} // set_up_sprites
+
+/*
+Starts a new game by setting all game values to their default state and runs the game.
+*/
+void Game::new_game() {
+	set_up_sprites();
 	bool game_over = run_game();
 	if (!game_over) {
 		reset_game();
@@ -102,14 +119,23 @@ void Game::new_game() {
 	}
 } // new_game
 
+/*
+Resets the game, by setting all game variables back to their initial states.
+*/
 void Game::reset_game() {
 	speed_counter = 0;
 	timer = 0;
 	time_since_last_spawn = 0;
+	player->set_score(0);
+	player->set_player_health(100);
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
-}
+} // reset_game
 
+/*
+Runs the whole game, from the main menu to the end game menu.
+@return - true if the player does not want to play the game again, false otherwise
+*/
 bool Game::run_game() {
 	bool advance = main_menu();
 	if (!advance) {
@@ -129,7 +155,7 @@ bool Game::run_game() {
 		return true;
 	}
 	return false; // the player wants to play the game again
-}
+} // run_game
 
 /*
 Displays the main menu of the game.
@@ -154,45 +180,111 @@ bool Game::main_menu() {
 	return true; // the enter key was pressed
 } // main_menu
 
+/*
+Runs the following methods associated with the game logic, such as moving the player, monster, and projectiles,
+getting input from the user, and ensuring that all sprites are not out of bounds.
+*/
+void Game::run_game_logic() {
+	monster->respawn_monster();
+	monster_projectile->fire_projectile(monster->get_monster_sprite());
+	projectile->move_projectile_up();
+	monster_projectile->move_projectile_down();
+	monster->move_monster();
+	monster_projectile->handle_projectile_out_of_bounds();
+	projectile->handle_projectile_out_of_bounds();
+	monster->handle_monster_out_of_bounds();
+	player->handle_player_out_of_bounds();
+} // run_game_logic
+
+/*
+Checks to see if the player collided with the monster sprite.
+@return - true if the player collided with the monster sprite, false otherwise
+*/
+bool Game::did_player_collide_with_monster() {
+	if (player->collied_with_monster(monster->get_monster_sprite())) {
+		return true;
+	} 
+	return false;
+} // did_player_collide_with_monster
+
+/*
+Checks if the projectile collided with the monster sprite, and if so, increases the score of the player by 100.
+*/
+void Game::handle_projectile_collsion() {
+	if (projectile->direct_hit(monster->get_monster_sprite())) {
+		monster->get_monster_sprite()->set_alive(false);
+		projectile->get_projectile_sprite()->set_alive(false);
+		int old_score = player->get_score(); // make this a method
+		player->set_score(old_score + 100); // make this a method
+	}
+} // handle_projectile_collsion
+
+/*
+Checks if the monster projectile collided with the player sprite, and if so, substracts a set amount from the health of the player.
+*/
+void Game::handle_monster_projectile_collision() {
+	if (monster_projectile->direct_hit(player->get_player_sprite())) {
+		monster_projectile->get_projectile_sprite()->set_alive(false);
+		int old_health = player->get_player_health();
+		player->set_player_health(old_health - 25);
+	}
+} // handle_monster_projectile_collision
+
+/*
+Draws the player to the buffer screen.
+*/
+void Game::draw_player() {
+	player->get_player_sprite()->draw(buffer);
+} // draw_player
+
+/*
+Draws the player projectile to the buffer screen, if it is currently alive.
+*/
+void Game::draw_projectile() {
+	if (projectile->get_projectile_sprite()->is_alive()) {
+		projectile->get_projectile_sprite()->draw(buffer);
+	}
+} // draw_projectile
+
+/*
+Draws the monster to the buffer screen, if it is currently alive.
+*/
+void Game::draw_monster() {
+	if (monster->get_monster_sprite()->is_alive()) {
+		monster->get_monster_sprite()->draw(buffer);
+	}
+} // draw_monster
+
+/*
+Draws the monster projectile to the buffer screen, if it is currently alive.
+*/
+void Game::draw_monster_projectile() {
+	if (monster_projectile->get_projectile_sprite()->is_alive()) {
+		monster_projectile->get_projectile_sprite()->draw(buffer);
+	}
+} // draw_monster_projectile
+
+/*
+Runs the game.
+@return - true if the game was over by pressing the ESC key, false otherwise
+*/
 bool Game::play_game() {
 	bool game_over = false;
 	bool pressed_esc = false;
 	while (!game_over) {
 		while (speed_counter > 0) {
-			monster->respawn_monster();
-			monster_projectile->fire_projectile(monster->get_monster_sprite());
-			projectile->move_projectile_up();
-			monster_projectile->move_projectile_down();
-			monster->move_monster();
-			monster_projectile->handle_projectile_out_of_bounds();
-			projectile->handle_projectile_out_of_bounds();
-			monster->handle_monster_out_of_bounds();
-			player->handle_player_out_of_bounds();
+			run_game_logic();
 			// Checking if player collided with the monster
-			if (player->collied_with_monster(monster->get_monster_sprite())) {
-				player->set_player_health(0); 
-				if (is_game_over()) {
+			if (did_player_collide_with_monster()) {
 					game_over = true;
-				}
-			} // outer if
+			} 
 			// Checking if monster projectile hit player
-			if (monster_projectile->direct_hit(player->get_player_sprite())) {
-				monster_projectile->get_projectile_sprite()->set_alive(false);
-				int old_health = player->get_player_health();
-				player->set_player_health(old_health - 25);
-				if (is_game_over()) {
-					game_over = true;
-				}
-			} // outer if
-
-			// Checking if projectile hit monster
-			if (projectile->direct_hit(monster->get_monster_sprite())) {
-				monster->get_monster_sprite()->set_alive(false);
-				projectile->get_projectile_sprite()->set_alive(false);
-				int old_score = player->get_score(); // make this a method
-				player->set_score(old_score + 100); // make this a method
+			handle_monster_projectile_collision();
+			if (is_player_health_zero()) {
+				game_over = true;
 			}
-
+			// Checking if projectile hit monster
+			handle_projectile_collsion();
 			player->get_player_input(projectile->get_projectile_sprite());
 			speed_counter--;
 			timer++;
@@ -204,17 +296,11 @@ bool Game::play_game() {
 			game_over = true;
 			pressed_esc = true;
 		}
-			
 		// Calculating time elasped
 		char time_elasped[256];
 		sprintf_s(time_elasped, 256, "%d", (timer / FPS) + 1);
 		sprintf_s(player_health, MAX_HEALTH_LEN, "%d", player->get_player_health());
 		sprintf_s(total_score, MAX_SCORE_LEN, "%d", player->get_score());
-
-		// Game over?
-		if (timer >= 10 * FPS) {
-			// game_over = true;
-		}
 
 		clear_bitmap(buffer);
 			
@@ -224,22 +310,10 @@ bool Game::play_game() {
 		textout_ex(buffer, font, total_score, 1, WIDTH - 20, WHITE, -1);
 		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
 
-		// Is the monster projectile alive or is the game not paused? 
-		if (monster_projectile->get_projectile_sprite()->is_alive()) {
-			monster_projectile->get_projectile_sprite()->draw(buffer); // then we draw it to the buffer
-		}
-
-		// Is the monster alive or is the game not paused? 
-		if (monster->get_monster_sprite()->is_alive()) {
-			monster->get_monster_sprite()->draw(buffer);
-		}
-
-		// Is the projectile alive or is the game not paused? 
-		if (projectile->get_projectile_sprite()->is_alive()) {
-			projectile->get_projectile_sprite()->draw(buffer); // then we draw it to the buffer
-		}
-
-		player->get_player_sprite()->draw(buffer);
+		draw_monster_projectile();
+		draw_monster();
+		draw_projectile();
+		draw_player();
 
 		// Updating game screen
 		update_screen();	
@@ -294,6 +368,9 @@ void Game::update_screen() {
 	release_screen();
 } // update_screen
 
+/*
+Displays the help module.
+*/
 void Game::display_help_module() {
 	clear_bitmap(buffer);
 	blit(background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
@@ -308,7 +385,7 @@ void Game::display_help_module() {
 Checks if the player's health is 0.
 @return - true if the player's health is 0, indicating that the game is over, false otherwise
 */
-bool Game::is_game_over() {
+bool Game::is_player_health_zero() {
 	if (player->get_player_health() <= 0) {
 		return true;
 	}
@@ -321,129 +398,5 @@ The function that gets called every time the interrupt handler is executed.
 void Game::increment_speed_counter()
 {
 	speed_counter++;
-	//time_since_last_spawn++;
 }
 END_OF_FUNCTION(increment_speed_counter);
-
-//static void cast_increment_speed_counter() {
-//
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//// Global variables
-//volatile int speed_counter = 0;
-//volatile int timer = 1;
-//volatile int time_since_last_spawn = 0;
-//
-///*
-//The entry point for the game.
-//*/
-//int main(void) {
-//	// Setting up game
-//	srand(time(NULL));
-//	int initialized_allegro = allegro_init();
-//	if (initialized_allegro != 0) {
-//		allegro_exit();
-//		return 0;
-//	}
-//	bool initialized_game = initialize_game();
-//	if (!initialized_game) {
-//		allegro_message("Error setting up the game.");
-//		allegro_exit();
-//		return 0;
-//	}
-//	// Initializing game vars
-//	BITMAP* buffer = create_bitmap(WIDTH, HEIGHT);
-//	bool game_over = false;
-//	char xpos[256];
-//	char ypos[256];
-//	// Game loop
-//	while (!game_over) {
-//		while (speed_counter > 0) {
-//			speed_counter--;
-//			timer++;
-//			time_since_last_spawn--;
-//		}
-//
-//		// Calculating time left
-//		char time_left[256];
-//		sprintf_s(time_left, 256, "%d", timer / FPS);
-//
-//		// Delete later
-//		//sprintf_s(xpos, 256, "PAINTER SPIRTE - X: %d", monster->get_x_pos());
-//		//sprintf_s(ypos, 256, "PAINTER SPRITE - Y: %d", monster->get_y_pos());
-//
-//		// Game over?
-//		if (timer >= 10 * FPS) {
-//			game_over = true;
-//		}
-//		clear_bitmap(buffer);
-//
-//		// Delete later 
-//		textout_ex(buffer, font, time_left, 1, 1, WHITE, -1);
-//		//textout_ex(buffer, font, xpos, 1, 11, WHITE, -1);
-//		//textout_ex(buffer, font, ypos, 1, 21, WHITE, -1);
-//
-//		//player->draw(buffer);
-//		// Updating screen
-//		acquire_screen();
-//		blit(buffer, screen, 0, 0, 0, 0, WIDTH, HEIGHT);
-//		release_screen();
-//	} // game loop
-//	allegro_exit();
-//	return 0;
-//} // main
-//END_OF_MAIN()
-//
-///*
-//The function that gets called every time the interrupt handler is executed.
-//*/
-//void increment_speed_counter()
-//{
-//	speed_counter++;
-//	//time_since_last_spawn++;
-//}
-//END_OF_FUNCTION(increment_speed_counter);
-//
-///*
-//Initializes the game, by setting the GFX mode and loading the sprites.
-//*/
-//bool initialize_game() {
-//	set_color_depth(24);
-//	int ret = set_gfx_mode(GFX_SAFE, WIDTH, HEIGHT, 0, 0);
-//	if (ret != 0) {
-//		allegro_message("Error setting up the GFX mode.");
-//		return false;
-//	}
-//	int installed_keyboard = install_keyboard();
-//	if (installed_keyboard != 0) {
-//		allegro_message("Error setting up the keyboard.");
-//		return false;
-//	}
-//	set_keyboard_rate(10000, 0);
-//	LOCK_VARIABLE(speed_counter);
-//	LOCK_FUNCTION(increment_speed_counter);
-//	int installed_interrupt = install_int_ex(increment_speed_counter, BPS_TO_TIMER(FPS));
-//	if (installed_interrupt != 0) {
-//		allegro_message("Error setting up the interrupt handler.");
-//		return false;
-//	}
-//	return true;
-//} // initialize_game
-//
-//bool main_menu() {
-//	return false;
-//}
