@@ -88,7 +88,6 @@ void Player::get_player_input(Sprite* player_projectile) {
 		fire_player_projectile(player_projectile);
 	}
 	// short delay after keypress
-	//rest(20);
 } // get_player_input
 
 /*

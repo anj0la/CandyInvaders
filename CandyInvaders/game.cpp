@@ -212,7 +212,9 @@ Checks if the projectile collided with the monster sprite, and if so, increases 
 */
 void Game::handle_projectile_collsion() {
 	if (projectile->direct_hit(monster->get_monster_sprite())) {
+		monster->get_monster_sprite()->set_y_pos(-900);
 		monster->get_monster_sprite()->set_alive(false);
+		projectile->get_projectile_sprite()->set_y_pos(-900);
 		projectile->get_projectile_sprite()->set_alive(false);
 		int old_score = player->get_score(); // make this a method
 		player->set_score(old_score + 100); // make this a method
@@ -224,6 +226,7 @@ Checks if the monster projectile collided with the player sprite, and if so, sub
 */
 void Game::handle_monster_projectile_collision() {
 	if (monster_projectile->direct_hit(player->get_player_sprite())) {
+		monster_projectile->get_projectile_sprite()->set_y_pos(-900);
 		monster_projectile->get_projectile_sprite()->set_alive(false);
 		int old_health = player->get_player_health();
 		player->set_player_health(old_health - 25);

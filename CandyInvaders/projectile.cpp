@@ -54,7 +54,7 @@ void Projectile::fire_projectile(Sprite* other) {
 	// fire again
 	if (!projectile->is_alive()) {
 		projectile->set_x_pos(other->get_x_pos() + OFFSET);
-		projectile->set_y_pos(other->get_y_pos());
+		projectile->set_y_pos(other->get_y_pos() + OFFSET);
 		projectile->set_alive(true);
 	}
 } // fire_projectile
