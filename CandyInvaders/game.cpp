@@ -13,7 +13,14 @@ Game::Game() {
 	timer = 0;
 	time_since_last_spawn = 0;
 	buffer = create_bitmap(WIDTH, HEIGHT);
-	background = NULL;
+	start_background = NULL;
+	game_background = NULL;
+	end_background = NULL;
+	health_bars[0] = NULL;
+	health_bars[1] = NULL;
+	health_bars[2] = NULL;
+	health_bars[3] = NULL;
+	score_font = NULL;
 	player = new Player();
 	projectile = new Projectile();
 	monster = new Monster();
@@ -21,6 +28,7 @@ Game::Game() {
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
 	paused = false;
+	state_health_bar = 0;
 	LOCK_VARIABLE(speed_counter);
 	LOCK_FUNCTION(increment_speed_counter);
 } // constructor
@@ -30,20 +38,77 @@ Automatically removes the game object from memory.
 */
 Game::~Game() {
 	destroy_bitmap(buffer);
-	destroy_bitmap(background);
+	destroy_bitmap(start_background);
+	destroy_bitmap(game_background);
+	destroy_bitmap(end_background);
+	for (int i = 0; i < 4; i++) {
+		destroy_bitmap(health_bars[i]);
+	}
+	destroy_font(score_font);
 } // destructor
 
 /*
-Loads a BMP file into the background bitmap.
+Loads a BMP file into the start game background bitmap.
 @return - true if the file was loaded successfully into the background, false otherwise
 */
-bool Game::load_background(const char* filename) {
-	background = load_bitmap(filename, NULL);
-	if (background != NULL) {
+bool Game::load_start_background(const char* filename) {
+	start_background = load_bitmap(filename, NULL);
+	if (start_background != NULL) {
 		return true;
 	}
 	return false; // background is NULL
-} // load_background
+} // load_start_background
+
+/*
+Loads a BMP file into the game background bitmap.
+@return - true if the file was loaded successfully into the background, false otherwise
+*/
+bool Game::load_game_background(const char* filename) {
+	game_background = load_bitmap(filename, NULL);
+	if (game_background != NULL) {
+		return true;
+	}
+	return false; // background is NULL
+} // load_game_background
+
+/*
+Loads a BMP file into the end game background bitmap.
+@return - true if the file was loaded successfully into the background, false otherwise
+*/
+bool Game::load_end_background(const char* filename) {
+	end_background = load_bitmap(filename, NULL);
+	if (end_background != NULL) {
+		return true;
+	}
+	return false; // background is NULL
+} // load_end_background
+
+/*
+Loads the BMP files into the health bar bitmap array.
+@return - true if the files were NOT loaded successfully into the health bar bitmap array, false otherwise
+*/
+bool Game::load_health_bars(const char* files[]) {
+	for (int i = 0; i < 4; i++) {
+		health_bars[i] = load_bitmap(files[i], NULL);
+		if (health_bars[i] == NULL) {
+			return true;
+		}
+	}
+	return false;
+} // load_health_bars
+
+/*
+Loads the PCX file into the score font.
+@return - true if the file was loaded successfully into the score font, false otherwise
+*/
+bool Game::load_score_font(const char* filename) {
+	score_font = load_font(filename, NULL, NULL);
+	if (score_font != NULL) {
+		return true;
+	}
+	return false;
+} // load_score_font
+
 
 /*
 Loads the BMP file containing the player sprite into the game.
@@ -98,7 +163,7 @@ Sets all of the sprites to their default states.
 */
 void Game::set_up_sprites() {
 	player->get_player_sprite()->set_x_pos(275);
-	player->get_player_sprite()->set_y_pos(675);
+	player->get_player_sprite()->set_y_pos(625);
 	player->get_player_sprite()->set_alive(true);
 	monster->get_monster_sprite()->set_y_pos(-100);
 	monster->get_monster_sprite()->set_x_pos(monster->get_random_monster_x_pos());
@@ -128,6 +193,7 @@ void Game::reset_game() {
 	time_since_last_spawn = 0;
 	player->set_score(0);
 	player->set_player_health(100);
+	state_health_bar = 0;
 	sprintf_s(total_score, MAX_SCORE_LEN, "%d", INIT_SCORE);
 	sprintf_s(player_health, MAX_HEALTH_LEN, "%d", INIT_HEALTH);
 } // reset_game
@@ -164,7 +230,7 @@ Displays the main menu of the game.
 */
 bool Game::main_menu() {
 	clear_bitmap(buffer);
-	blit(background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
+	blit(start_background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
 	textout_ex(buffer, font, "Candy Invaders", 1, 11, WHITE, -1);
 	textout_ex(buffer, font, "Press ENTER to start the game.", 1, 21, WHITE, -1);
 	update_screen();
@@ -230,6 +296,10 @@ void Game::handle_monster_projectile_collision() {
 		monster_projectile->get_projectile_sprite()->set_alive(false);
 		int old_health = player->get_player_health();
 		player->set_player_health(old_health - 25);
+		state_health_bar++;
+		if (state_health_bar > 3) {
+			state_health_bar = 3;
+		}
 	}
 } // handle_monster_projectile_collision
 
@@ -306,11 +376,13 @@ bool Game::play_game() {
 		sprintf_s(total_score, MAX_SCORE_LEN, "%d", player->get_score());
 
 		clear_bitmap(buffer);
-			
+		blit(game_background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
+		blit(health_bars[state_health_bar], buffer, 0, 0, 200, 740, 200, 60);
+
 		// Drawing total score and player health to buffer
 		textout_ex(buffer, font, time_elasped, 1, 1, WHITE, -1);
 
-		textout_ex(buffer, font, total_score, 1, WIDTH - 20, WHITE, -1);
+		textout_centre_ex(buffer, score_font, total_score, WIDTH / 2, 10, BROWN, -1);
 		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
 
 		draw_monster_projectile();
@@ -346,9 +418,7 @@ Displays the end game menu.
 */
 bool Game::end_game_menu() {
 	clear_bitmap(buffer);
-	blit(background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
-	textout_ex(buffer, font, "Candy Invaders", 1, 11, BLACK, -1);
-	textout_ex(buffer, font, "Press ENTER to replay the game or ESC to quit the game", 1, 21, BLACK, -1);
+	blit(end_background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
 	update_screen();
 	while (true) {
 		if (key[KEY_ENTER]) {
@@ -376,7 +446,7 @@ Displays the help module.
 */
 void Game::display_help_module() {
 	clear_bitmap(buffer);
-	blit(background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
+	blit(game_background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
 	rectfill(buffer, 150, 150, 450, 450, BLACK);
 	textout_ex(buffer, font, "HELP MODULE", 155, 155, WHITE, -1);
 	textout_ex(buffer, font, "Use the Up, Down, Left and Right arrow keys to move around.", 155, 175, WHITE, -1);
@@ -398,8 +468,7 @@ bool Game::is_player_health_zero() {
 /*
 The function that gets called every time the interrupt handler is executed.
 */
-void Game::increment_speed_counter()
-{
+void Game::increment_speed_counter() {
 	speed_counter++;
 }
 END_OF_FUNCTION(increment_speed_counter);

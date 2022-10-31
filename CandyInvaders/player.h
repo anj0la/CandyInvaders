@@ -3,6 +3,8 @@
 #include <allegro.h>
 #include "sprite.h"
 
+#define PROJECTILE_OFFSET 60
+
 class Player {
 private:
 	Sprite* player_spr;

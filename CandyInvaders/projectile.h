@@ -4,7 +4,7 @@
 #include "sprite.h"
 
 #define OFFSET 25
-#define PROJECTILE_SPEED 7
+#define PROJECTILE_SPEED 8
 
 class Projectile {
 private:

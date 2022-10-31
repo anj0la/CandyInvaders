@@ -12,6 +12,8 @@
 // Colours
 #define BLACK makecol(0, 0, 0)
 #define WHITE makecol(255, 255, 255)
+#define BROWN makecol(122, 49, 69)
+
 
 // Game Constants
 #define FPS 60
@@ -28,7 +30,11 @@ private:
 	volatile int timer; // actually don't need this, leaving it for testing purposes
 	volatile int time_since_last_spawn;
 	BITMAP* buffer;
-	BITMAP* background;
+	BITMAP* start_background;
+	BITMAP* game_background;
+	BITMAP* end_background;
+	BITMAP* health_bars[4];
+	FONT* score_font;
 	Player* player;
 	Projectile* projectile;
 	Monster* monster;
@@ -36,12 +42,17 @@ private:
 	char total_score[MAX_SCORE_LEN];
 	char player_health[MAX_HEALTH_LEN];
 	bool paused;
+	int state_health_bar;
 public:
 	Game();
 	~Game();
-	bool load_background(const char* filename);
+	bool load_start_background(const char* filename);
+	bool load_game_background(const char* filename);
+	bool load_end_background(const char* filename);
 	bool load_player_sprite(const char* filename);
 	bool load_projectile_sprite(const char* filename);
+	bool load_health_bars(const char* files[]);
+	bool load_score_font(const char* filename);
 	bool load_monster_sprite(const char* filename);
 	bool load_monster_projectile_sprite(const char* filename);
 	void set_up_sprites();

@@ -154,8 +154,18 @@
     <Image Include="graphics\candy_monster.bmp" />
     <Image Include="graphics\candy_ship.bmp" />
     <Image Include="graphics\candy_swirl.bmp" />
+    <Image Include="graphics\game_background.bmp" />
+    <Image Include="graphics\game_end_background.bmp" />
+    <Image Include="graphics\game_start_background.bmp" />
+    <Image Include="graphics\health_bar_100.bmp" />
+    <Image Include="graphics\health_bar_25.bmp" />
+    <Image Include="graphics\health_bar_50.bmp" />
+    <Image Include="graphics\health_bar_75.bmp" />
     <Image Include="graphics\monster_projectile.bmp" />
     <Image Include="graphics\static_background.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graphics\score_font.pcx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -61,7 +61,7 @@ Gets a random position for the candy monster to spawn, between 5 and 595 pixels.
 @return - random x position of the candy monster
 */
 int Monster::get_random_monster_x_pos() {
-	return rand() % 475 + 75;
+	return rand() % 390 + 90;
 } // get_random_monster_x_pos
 
 

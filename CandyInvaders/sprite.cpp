@@ -10,7 +10,7 @@ Sprite::Sprite() {
 	height = 0;
 	x_pos = 0;
 	y_pos = 0;
-	speed = 3;
+	speed = 4;
 	alive = false; // not alive
 } // constructor
 

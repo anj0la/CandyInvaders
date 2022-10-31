@@ -72,12 +72,12 @@ void Player::set_score(int new_score) {
 Gets keyboard input from the player, and executes an action based on the key that the user has pressed.
 */
 void Player::get_player_input(Sprite* player_projectile) {
-	if (key[KEY_UP]) {
-		move_up();
-	}
-	if (key[KEY_DOWN]) {
-		move_down();
-	}
+	//if (key[KEY_UP]) {
+	//	move_up();
+	//}
+	//if (key[KEY_DOWN]) {
+	//	move_down();
+	//}
 	if (key[KEY_LEFT]) {
 		move_left();
 	}
@@ -124,7 +124,7 @@ Fires the projectile.
 void Player::fire_player_projectile(Sprite* player_projectile) {
 	// fire again
 	if (!player_projectile->is_alive()) {
-		player_projectile->set_x_pos(player_spr->get_x_pos() + 25);
+		player_projectile->set_x_pos(player_spr->get_x_pos() + PROJECTILE_OFFSET);
 		player_projectile->set_y_pos(player_spr->get_y_pos());
 		player_projectile->set_alive(true);
 	}
@@ -150,8 +150,8 @@ void Player::handle_player_out_of_bounds() {
 	if (player_spr->get_x_pos() <= 0) { // left
 		player_spr->set_x_pos(0);
 	}
-	if (player_spr->get_x_pos() >= 525) { // right
-		player_spr->set_x_pos(525);
+	if (player_spr->get_x_pos() >= 452) { // right
+		player_spr->set_x_pos(452);
 	}
 	if (player_spr->get_y_pos() <= 0) { // top
 		player_spr->set_y_pos(0);
