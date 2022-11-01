@@ -33,10 +33,7 @@
     <ClCompile Include="monster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="monster_projectile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="initialize.cpp">
+    <ClCompile Include="candyinvaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -48,6 +45,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="candyinvaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projectile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="monster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -64,5 +73,60 @@
     <Image Include="graphics\monster_projectile.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="graphics\static_background.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\game_background.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\game_end_background.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\game_start_background.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\health_bar_25.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\health_bar_50.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\health_bar_75.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\health_bar_100.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\candy_invaders_logo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\logo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="graphics\score_font.pcx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="sounds\candy_monster_fed.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="sounds\cottagecore-17463.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="sounds\pop-94319.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="sounds\goo-splat2.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="sounds\videogame-death-sound-43894.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
