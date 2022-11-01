@@ -21,6 +21,11 @@ Game::Game() {
 	health_bars[2] = NULL;
 	health_bars[3] = NULL;
 	score_font = NULL;
+	background_music = NULL;
+	shooting_sound = NULL;
+	goo_splat = NULL;
+	candy_monster_fed = NULL;
+	game_over_sound = NULL;
 	player = new Player();
 	projectile = new Projectile();
 	monster = new Monster();
@@ -45,6 +50,11 @@ Game::~Game() {
 		destroy_bitmap(health_bars[i]);
 	}
 	destroy_font(score_font);
+	destroy_sample(background_music);
+	destroy_sample(shooting_sound);
+	destroy_sample(goo_splat);
+	destroy_sample(candy_monster_fed);
+	destroy_sample(game_over_sound);
 } // destructor
 
 /*
@@ -85,16 +95,16 @@ bool Game::load_end_background(const char* filename) {
 
 /*
 Loads the BMP files into the health bar bitmap array.
-@return - true if the files were NOT loaded successfully into the health bar bitmap array, false otherwise
+@return - true if the files were loaded successfully into the health bar bitmap array, false otherwise
 */
 bool Game::load_health_bars(const char* files[]) {
 	for (int i = 0; i < 4; i++) {
 		health_bars[i] = load_bitmap(files[i], NULL);
 		if (health_bars[i] == NULL) {
-			return true;
+			return false;
 		}
 	}
-	return false;
+	return true;
 } // load_health_bars
 
 /*
@@ -159,6 +169,66 @@ bool Game::load_monster_projectile_sprite(const char* filename) {
 } // load_monster_projectile_sprite
 
 /*
+Loads the BMP file containing the background music into the game.
+@return - true if the file loaded successfully, false otherwise
+*/
+bool Game::load_background_music(const char* filename) {
+	background_music = load_sample(filename);
+	if (!background_music) {
+		return false;
+	}
+	return true;
+} // load_background_music
+
+/*
+Loads the BMP file containing the background music into the game.
+@return - true if the file loaded successfully, false otherwise
+*/
+bool Game::load_shooting_sound(const char* filename) {
+	shooting_sound = load_sample(filename);
+	if (!shooting_sound) {
+		return false;
+	}
+	return true;
+} // load_shooting_sound
+
+/*
+Loads the BMP file containing the background music into the game.
+@return - true if the file loaded successfully, false otherwise
+*/
+bool Game::load_goo_sound(const char* filename) {
+	goo_splat = load_sample(filename);
+	if (!goo_splat) {
+		return false;
+	}
+	return true;
+} // load_goo_sound
+
+/*
+Loads the BMP file containing the background music into the game.
+@return - true if the file loaded successfully, false otherwise
+*/
+bool Game::load_monster_fed_sound(const char* filename) {
+	candy_monster_fed = load_sample(filename);
+	if (!candy_monster_fed) {
+		return false;
+	}
+	return true;
+} // load_monster_fed_sound
+
+/*
+Loads the BMP file containing the background music into the game.
+@return - true if the file loaded successfully, false otherwise
+*/
+bool Game::load_game_over_sound(const char* filename) {
+	game_over_sound = load_sample(filename);
+	if (!game_over_sound) {
+		return false;
+	}
+	return true;
+} // load_game_over_sound
+
+/*
 Sets all of the sprites to their default states.
 */
 void Game::set_up_sprites() {
@@ -177,6 +247,7 @@ Starts a new game by setting all game values to their default state and runs the
 */
 void Game::new_game() {
 	set_up_sprites();
+	play_sample(background_music, VOLUME, PANNING, FREQUENCY, TRUE);
 	bool game_over = run_game();
 	if (!game_over) {
 		reset_game();
@@ -231,8 +302,6 @@ Displays the main menu of the game.
 bool Game::main_menu() {
 	clear_bitmap(buffer);
 	blit(start_background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
-	textout_ex(buffer, font, "Candy Invaders", 1, 11, WHITE, -1);
-	textout_ex(buffer, font, "Press ENTER to start the game.", 1, 21, WHITE, -1);
 	update_screen();
 	while (true) {
 		if (key[KEY_ENTER]) {
@@ -284,6 +353,7 @@ void Game::handle_projectile_collsion() {
 		projectile->get_projectile_sprite()->set_alive(false);
 		int old_score = player->get_score(); // make this a method
 		player->set_score(old_score + 100); // make this a method
+		play_sample(candy_monster_fed, VOLUME, PANNING, FREQUENCY, FALSE);
 	}
 } // handle_projectile_collsion
 
@@ -296,6 +366,7 @@ void Game::handle_monster_projectile_collision() {
 		monster_projectile->get_projectile_sprite()->set_alive(false);
 		int old_health = player->get_player_health();
 		player->set_player_health(old_health - 25);
+		play_sample(goo_splat, VOLUME + 32, PANNING + 32, FREQUENCY, FALSE);
 		state_health_bar++;
 		if (state_health_bar > 3) {
 			state_health_bar = 3;
@@ -358,7 +429,7 @@ bool Game::play_game() {
 			}
 			// Checking if projectile hit monster
 			handle_projectile_collsion();
-			player->get_player_input(projectile->get_projectile_sprite());
+			player->get_player_input(projectile->get_projectile_sprite(), shooting_sound);
 			speed_counter--;
 			timer++;
 			time_since_last_spawn--;
@@ -369,22 +440,13 @@ bool Game::play_game() {
 			game_over = true;
 			pressed_esc = true;
 		}
-		// Calculating time elasped
-		char time_elasped[256];
-		sprintf_s(time_elasped, 256, "%d", (timer / FPS) + 1);
-		sprintf_s(player_health, MAX_HEALTH_LEN, "%d", player->get_player_health());
 		sprintf_s(total_score, MAX_SCORE_LEN, "%d", player->get_score());
 
+		// updating buffer 
 		clear_bitmap(buffer);
 		blit(game_background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
 		blit(health_bars[state_health_bar], buffer, 0, 0, 200, 740, 200, 60);
-
-		// Drawing total score and player health to buffer
-		textout_ex(buffer, font, time_elasped, 1, 1, WHITE, -1);
-
 		textout_centre_ex(buffer, score_font, total_score, WIDTH / 2, 10, BROWN, -1);
-		textout_ex(buffer, font, player_health, 1, WIDTH - 60, WHITE, -1);
-
 		draw_monster_projectile();
 		draw_monster();
 		draw_projectile();
@@ -420,6 +482,8 @@ bool Game::end_game_menu() {
 	clear_bitmap(buffer);
 	blit(end_background, buffer, 0, 0, 0, 0, WIDTH, HEIGHT);
 	update_screen();
+	stop_sample(background_music);
+	play_sample(game_over_sound, VOLUME, PANNING, FREQUENCY, FALSE);
 	while (true) {
 		if (key[KEY_ENTER]) {
 			key[KEY_ENTER] = 0; // so that the user can press the key again

@@ -71,7 +71,7 @@ void Player::set_score(int new_score) {
 /*
 Gets keyboard input from the player, and executes an action based on the key that the user has pressed.
 */
-void Player::get_player_input(Sprite* player_projectile) {
+void Player::get_player_input(Sprite* player_projectile, SAMPLE* shooting_sound) {
 	//if (key[KEY_UP]) {
 	//	move_up();
 	//}
@@ -85,7 +85,7 @@ void Player::get_player_input(Sprite* player_projectile) {
 		move_right();
 	}
 	if (key[KEY_SPACE]) {
-		fire_player_projectile(player_projectile);
+		fire_player_projectile(player_projectile, shooting_sound);
 	}
 	// short delay after keypress
 } // get_player_input
@@ -121,12 +121,13 @@ void Player::move_right() {
 /*
 Fires the projectile.
 */
-void Player::fire_player_projectile(Sprite* player_projectile) {
+void Player::fire_player_projectile(Sprite* player_projectile, SAMPLE* shooting_sound) {
 	// fire again
 	if (!player_projectile->is_alive()) {
 		player_projectile->set_x_pos(player_spr->get_x_pos() + PROJECTILE_OFFSET);
 		player_projectile->set_y_pos(player_spr->get_y_pos());
 		player_projectile->set_alive(true);
+		play_sample(shooting_sound, VOL, PAN, FREQ, FALSE);
 	}
 } // fire_player_projectile
 

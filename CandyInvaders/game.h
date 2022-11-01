@@ -14,7 +14,6 @@
 #define WHITE makecol(255, 255, 255)
 #define BROWN makecol(122, 49, 69)
 
-
 // Game Constants
 #define FPS 60
 #define SPAWN_RATE = 3 * FPS
@@ -22,6 +21,9 @@
 #define INIT_HEALTH 100
 #define MAX_SCORE_LEN 12 // max int digits = 10 + 1 to account for the '\0' (null) character and + 1 for the '-' character
 #define MAX_HEALTH_LEN 4 // 100 = 3 chars + 1 to account for the '\0' (null) character
+#define VOLUME 32
+#define PANNING 32
+#define FREQUENCY 1000
 
 // Game class
 class Game {
@@ -35,6 +37,11 @@ private:
 	BITMAP* end_background;
 	BITMAP* health_bars[4];
 	FONT* score_font;
+	SAMPLE* background_music;
+	SAMPLE* shooting_sound;
+	SAMPLE* goo_splat;
+	SAMPLE* candy_monster_fed;
+	SAMPLE* game_over_sound;
 	Player* player;
 	Projectile* projectile;
 	Monster* monster;
@@ -53,6 +60,11 @@ public:
 	bool load_projectile_sprite(const char* filename);
 	bool load_health_bars(const char* files[]);
 	bool load_score_font(const char* filename);
+	bool load_background_music(const char* filename);
+	bool load_shooting_sound(const char* filename);
+	bool load_goo_sound(const char* filename);
+	bool load_monster_fed_sound(const char* filename);
+	bool load_game_over_sound(const char* filename);
 	bool load_monster_sprite(const char* filename);
 	bool load_monster_projectile_sprite(const char* filename);
 	void set_up_sprites();

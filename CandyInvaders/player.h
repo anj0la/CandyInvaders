@@ -4,6 +4,9 @@
 #include "sprite.h"
 
 #define PROJECTILE_OFFSET 60
+#define VOL 32
+#define PAN 32
+#define FREQ 1000
 
 class Player {
 private:
@@ -19,12 +22,12 @@ public:
 	int get_score();
 	void set_player_health(int new_health);
 	void set_score(int new_score);
-	void get_player_input(Sprite* player_projectile);
+	void get_player_input(Sprite* player_projectile, SAMPLE* shooting_sound);
 	void move_up();
 	void move_down();
 	void move_left();
 	void move_right();
-	void fire_player_projectile(Sprite* player_projectile);
+	void fire_player_projectile(Sprite* player_projectile, SAMPLE* shooting_sound);
 	bool collied_with_monster(Sprite* monster_spr);
 	void handle_player_out_of_bounds();
 };

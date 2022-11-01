@@ -135,7 +135,6 @@
   <ItemGroup>
     <ClCompile Include="candyinvaders.cpp" />
     <ClCompile Include="game.cpp" />
-    <ClCompile Include="initialize.cpp" />
     <ClCompile Include="monster.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="projectile.cpp" />
@@ -166,6 +165,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="graphics\score_font.pcx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="sounds\candy_monster_fed.wav" />
+    <Media Include="sounds\cottagecore-17463.wav" />
+    <Media Include="sounds\goo-splat2.wav" />
+    <Media Include="sounds\pop-94319.wav" />
+    <Media Include="sounds\videogame-death-sound-43894.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
