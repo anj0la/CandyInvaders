@@ -13,7 +13,7 @@ https://user-images.githubusercontent.com/92893114/199132601-abcacc1e-4afe-4786-
 <img width="25%" alt="Game Start" src="https://user-images.githubusercontent.com/92893114/199106306-63432173-d3b1-4407-bdda-3d3bfdf40887.png"> <img width="25%" alt="Game End" src="https://user-images.githubusercontent.com/92893114/199106447-53105665-05e8-441a-9c79-f4860429f601.png">
 
 ## Download the Game
-Will be made available to play and test it out soon (will be only available on Windows).
+Available under the "Releases" category with the tag "v1".
 
 ## Future Updates
 - Add a help module in the game to be invoked by pressing CTRL + H.
