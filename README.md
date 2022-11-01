@@ -7,7 +7,7 @@ all while trying to avoid getting hit by the poisonous candy goo that the candy 
 The more candy monsters you destroy, the better! However, if the candy monster gets you, or you get hit by too much poisonous candy goo, the game ends!
 
 ## Quick Video Demonstration of the Game
-TODO - Add the video game demonstration.
+https://user-images.githubusercontent.com/92893114/199132601-abcacc1e-4afe-4786-b342-3812840454ea.mp4
 
 ## Screenshots of the Game
 <img width="25%" alt="Game Start" src="https://user-images.githubusercontent.com/92893114/199106306-63432173-d3b1-4407-bdda-3d3bfdf40887.png"> <img width="25%" alt="Game End" src="https://user-images.githubusercontent.com/92893114/199106447-53105665-05e8-441a-9c79-f4860429f601.png">
