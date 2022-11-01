@@ -10,6 +10,7 @@ int main(void) {
 	if (allegro_init() != 0) {
 		return 1;
 	}
+	set_window_title("Candy Invaders");
 	set_color_depth(24);
 	install_keyboard();
 	set_keyboard_rate(10000, 0);

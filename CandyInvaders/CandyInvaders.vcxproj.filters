@@ -56,6 +56,9 @@
     <ClInclude Include="monster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="graphics\candy_ship.bmp">
@@ -94,6 +97,12 @@
     <Image Include="graphics\health_bar_100.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="graphics\candy_invaders_logo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="graphics\logo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="graphics\score_font.pcx" />
@@ -114,5 +123,10 @@
     <Media Include="sounds\videogame-death-sound-43894.wav">
       <Filter>Resource Files</Filter>
     </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
