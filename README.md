@@ -6,7 +6,7 @@ all while trying to avoid getting hit by the poisonous candy goo that the candy 
 
 The more candy monsters you destroy, the better! However, if the candy monster gets you, or you get hit by too much poisonous candy goo, the game ends!
 
-## Quick Video Demonstration of the Game
+## Video Demonstration of the Game
 https://user-images.githubusercontent.com/92893114/199132601-abcacc1e-4afe-4786-b342-3812840454ea.mp4
 
 ## Screenshots of the Game
@@ -15,7 +15,6 @@ https://user-images.githubusercontent.com/92893114/199132601-abcacc1e-4afe-4786-
 ## Download the Game
 Available under the "Releases" category with the tag "v1".
 
-## Future Updates
-- Add a help module in the game to be invoked by pressing CTRL + H.
-- Add a moving (vertical scrolling) background to make the game more interactive.
-- Add a Candy Monster "Boss" that spawns every 5-10 seconds, takes longer to destroy and is smarter (AI implementation).
+## Updates
+- Added help module in the game to be invoked by pressing CTRL + H.
+- Added a moving background in the game to make it more interactive.
